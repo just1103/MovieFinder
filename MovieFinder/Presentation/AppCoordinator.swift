@@ -25,6 +25,12 @@ final class AppCoordinator: CoordinatorProtocol {
     
     private func showSearchPage() {
         guard let navigationController = navigationController else { return }
+// WebView TEST
+        let detailCoordinator = DetailCoordinator(navigationController: navigationController)
+        childCoordinators.append(detailCoordinator)
+        detailCoordinator.start(with: MovieItem(title: "", link: "", image: "", director: "", actor: "", userRating: ""))
+        
+// TODO: 검색화면 구현
 //        let searchCoordinator = SearchCoordinator(navigationController: navigationController)
 //        childCoordinators.append(searchCoordinator)
 //        searchCoordinator.start()
