@@ -11,7 +11,6 @@ import RxSwift
 final class DetailViewModel {
     // MARK: - Nested Types
     struct Input {
-        let invokedViewDidLoad: Observable<Void>
     }
     
     struct Output {

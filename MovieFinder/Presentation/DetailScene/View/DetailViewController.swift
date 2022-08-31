@@ -18,7 +18,6 @@ final class DetailViewController: UIViewController {
     }()
     
     private var viewModel: DetailViewModel!
-    private let invokedViewDidLoad = PublishSubject<Void>()
     private let disposeBag = DisposeBag()
     
     // MARK: - Initializers
@@ -32,7 +31,6 @@ final class DetailViewController: UIViewController {
         super.viewDidLoad()
         bind()
         configureUI()
-        invokedViewDidLoad.onNext(())
     }
     
     // MARK: - Methods
@@ -52,7 +50,6 @@ final class DetailViewController: UIViewController {
 extension DetailViewController {
     private func bind() {
         let input = DetailViewModel.Input(
-            invokedViewDidLoad: invokedViewDidLoad.asObservable()
         )
         
         let output = viewModel.transform(input)
