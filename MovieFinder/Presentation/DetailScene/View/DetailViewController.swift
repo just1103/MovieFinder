@@ -11,10 +11,17 @@ import WebKit
 
 final class DetailViewController: UIViewController {
     // MARK: - Properties
-    let webView: WKWebView = {
+    private let blogWebView: WKWebView = {
         let webView = WKWebView()
         webView.translatesAutoresizingMaskIntoConstraints = false
         return webView
+    }()
+    private let activityIndicator: UIActivityIndicatorView = {
+        let activityIndicator = UIActivityIndicatorView()
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+        activityIndicator.style = .large
+        activityIndicator.hidesWhenStopped = true
+        return activityIndicator
     }()
     
     private var viewModel: DetailViewModel!
@@ -30,18 +37,72 @@ final class DetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         bind()
+        configureToolbar()
         configureUI()
     }
     
     // MARK: - Methods
+    private func configureToolbar() {
+//        navigationController?.isToolbarHidden = false
+//        navigationController?.toolbar.backgroundColor = .red
+//
+//        let backButton = UIBarButtonItem(image: UIImage(systemName: "plus"), style: .plain, target: self, action: #selector(backButtonDidTap))
+//
+//        navigationController?.toolbar.items = [backButton]
+        
+//        navigationController?.setToolbarItems(
+//            [backButton],
+//            animated: true
+//        )
+//            let backButton = UIBarButtonItem(
+//                barButtonSystemItem: .rewind,
+//                target: self,
+//                action: #selector(backButtonDidTap)
+//            )
+//        let forwardButton = UIBarButtonItem(
+//            barButtonSystemItem: .fastForward,
+//            target: self,
+//            action: #selector(forwardButtonDidTap)
+//        )
+//        let refreshButton = UIBarButtonItem(
+//            barButtonSystemItem: .refresh,
+//            target: self,
+//            action: #selector(refreshButtonDidTap)
+//        )
+//
+//        navigationController?.toolbarItems = [backButton, forwardButton, refreshButton]
+//        navigationController?.setToolbarItems(
+//            [backButton, forwardButton, refreshButton],
+//            animated: true
+//        )
+    }
+    
+    @objc
+    private func backButtonDidTap() {
+        blogWebView.goBack()
+    }
+    @objc
+    private func forwardButtonDidTap() {
+        blogWebView.goForward()
+    }
+    @objc
+    private func refreshButtonDidTap() {
+        blogWebView.reload()
+    }
+    
     private func configureUI() {
-        view.addSubview(webView)
+        view.addSubview(blogWebView)
+        view.addSubview(activityIndicator)
+        blogWebView.navigationDelegate = self
         
         NSLayoutConstraint.activate([
-            webView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            webView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            webView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-            webView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            blogWebView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            blogWebView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            blogWebView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            blogWebView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            
+            activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor),
         ])
     }
 }
@@ -74,15 +135,35 @@ extension DetailViewController {
                     actor: "",
                     userRating: "0.00"
                 )
-                owner.loadWebPage(happyMovieItem.link)
+                owner.loadWebPage(with: happyMovieItem.link)
             })
             .disposed(by: disposeBag)
     }
     
-    private func loadWebPage(_ url: String) {
+    private func loadWebPage(with url: String) {
         guard let url = URL(string: url) else { return }
         let urlRequest = URLRequest(url: url)
         
-        webView.load(urlRequest)
+        blogWebView.load(urlRequest)
+    }
+    
+    // TODO: API 연동?
+    private func loadWebPageWithHTML(_ html: String) {
+        blogWebView.loadHTMLString(html, baseURL: nil)
+    }
+}
+
+extension DetailViewController: WKNavigationDelegate {
+    func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {
+        activityIndicator.startAnimating()
+    }
+    
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+//        backButton.isEna
+        activityIndicator.stopAnimating()
+    }
+    
+    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+        activityIndicator.stopAnimating()
     }
 }

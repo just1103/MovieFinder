@@ -41,6 +41,25 @@ final class DetailCoordinator: CoordinatorProtocol {
         let detailViewModel = DetailViewModel(movieItem: movieItem, coordinator: self)
         let detailViewController = DetailViewController(viewModel: detailViewModel)
         
+        let backButton = UIBarButtonItem(
+            barButtonSystemItem: .rewind,
+            target: self,
+            action: nil
+        )
+        let forwardButton = UIBarButtonItem(
+            barButtonSystemItem: .fastForward,
+            target: self,
+            action: nil
+        )
+        let refreshButton = UIBarButtonItem(
+            barButtonSystemItem: .refresh,
+            target: self,
+            action: nil
+        )
+        navigationController.isToolbarHidden = false
+        navigationController.setToolbarItems([backButton, forwardButton, refreshButton], animated: true)
+        backButton.isEnabled = true
+        
         navigationController.pushViewController(detailViewController, animated: true)
     }
 }
